@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataWise AI — Smart Data Quality & Repair Platform</title>
+  <meta name="description" content="Turn messy datasets into trusted data. Real-time deterministic data quality analysis, outlier detection, whitespace normalization, duplicate elimination, and automated repair.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="theme-light">
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h2>DataWise <span class="badge-ai">AI</span></h2>
+          <p>Data Quality & Repair</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <a href="#overview" class="nav-item active" data-section="overview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Overview</span>
+        </a>
+        <a href="#upload" class="nav-item" data-section="upload">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          <span>Upload Dataset</span>
+        </a>
+        <a href="#quality" class="nav-item" data-section="quality">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+          <span>Data Quality</span>
+          <span class="nav-counter" id="nav-issue-counter" style="display:none;">0</span>
+        </a>
+        <a href="#clean" class="nav-item" data-section="clean">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 4-2 2M18 7l-2 2M19 12a7 7 0 1 1-7-7c1.7 0 3.2.6 4.4 1.6L20 4v6h-6l2.4-2.4A4.98 4.98 0 0 0 12 7a5 5 0 1 0 5 5"/></svg>
+          <span>Clean Data</span>
+        </a>
+        <a href="#reports" class="nav-item" data-section="reports">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Reports</span>
+        </a>
+        <a href="#about" class="nav-item" data-section="about">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>About</span>
+        </a>
+      </nav>
+
+      <!-- Active Session Status Card in Sidebar -->
+      <div class="sidebar-session" id="sidebar-session-card">
+        <div class="session-header">
+          <span class="status-indicator active"></span>
+          <span class="session-label">Active Dataset</span>
+        </div>
+        <p class="session-filename" id="sidebar-filename">No dataset loaded</p>
+        <div class="session-meta">
+          <span id="sidebar-stats">Upload or try demo</span>
+        </div>
+        <button class="btn btn-sm btn-outline-light w-100" id="sidebar-reset-btn" style="display:none;" onclick="App.resetSession()">Reset to Raw</button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="status-pill">
+          <span class="dot-online"></span> Engine Online
+        </div>
+        <span class="version-label">v1.0.0 • College Hackathon</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-icon mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          <div class="topbar-title">
+            <h1 id="page-title">Dashboard Overview</h1>
+            <p id="page-subtitle">Turn messy data into trusted data with transparent statistical repairs.</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary btn-sm" id="topbar-sample-btn" onclick="App.loadSampleData()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Try Sample Dataset
+          </button>
+          <button class="btn btn-primary btn-sm" id="topbar-upload-btn" onclick="App.navigateTo('upload')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+            Upload Dataset
+          </button>
+        </div>
+      </header>
+
+      <!-- Toast Alerts Container -->
+      <div id="toast-container" class="toast-container"></div>
+
+      <!-- SECTION: OVERVIEW -->
+      <section id="section-overview" class="content-section active">
+        <!-- Welcome Hero Banner -->
+        <div class="hero-card">
+          <div class="hero-content">
+            <div class="hero-badge">AI & Statistical Quality Pipeline</div>
+            <h2>Turn messy data into trusted data.</h2>
+            <p>DataWise AI analyzes CSV and Excel datasets for duplicate rows, missing entries, irregular casing, whitespace traps, invalid datatypes, and outliers with complete explainability.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" onclick="App.navigateTo('upload')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                Upload Your Dataset
+              </button>
+              <button class="btn btn-secondary" onclick="App.loadSampleData()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Try Demo Dataset
+              </button>
+            </div>
+          </div>
+          <div class="hero-graphic">
+            <div class="score-dial-card" id="overview-dial-card">
+              <span class="dial-label">DATA QUALITY SCORE</span>
+              <div class="dial-score-wrapper">
+                <span class="dial-score" id="overview-score-val">--</span>
+                <span class="dial-max">/100</span>
+              </div>
+              <span class="dial-grade badge-neutral" id="overview-grade-badge">Not Analyzed</span>
+              <p class="dial-subtext" id="overview-score-subtext">Upload a dataset to evaluate quality</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon bg-blue-subtle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-title">Rows Analyzed</span>
+              <span class="metric-value" id="stat-total-rows">0</span>
+              <span class="metric-caption" id="stat-total-cols">0 Columns</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-red-subtle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-title">Issues Detected</span>
+              <span class="metric-value text-danger" id="stat-total-issues">0</span>
+              <span class="metric-caption" id="stat-problematic-cells">0 flagged cells</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-amber-subtle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-title">Duplicate Rows</span>
+              <span class="metric-value" id="stat-duplicate-rows">0</span>
+              <span class="metric-caption" id="stat-duplicate-pct">0% of records</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-purple-subtle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+            </div>
+            <div class="metric-body">
+              <span class="metric-title">Missing Values</span>
+              <span class="metric-value" id="stat-missing-values">0</span>
+              <span class="metric-caption" id="stat-missing-pct">0% overall</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts & Activity Row -->
+        <div class="dashboard-grid">
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Quality Pillar Distribution</h3>
+                <p class="card-subtitle">Weighted component performance breakdown</p>
+              </div>
+            </div>
+            <div class="card-body chart-body">
+              <canvas id="qualityRadarChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Issues by Severity & Category</h3>
+                <p class="card-subtitle">Categorical concentration of data problems</p>
+              </div>
+            </div>
+            <div class="card-body chart-body">
+              <canvas id="issuesBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity & Quick Tour -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 class="card-title">System Workflow Guide</h3>
+          </div>
+          <div class="card-body">
+            <div class="steps-row">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <h4>Upload or Demo</h4>
+                <p>Provide your CSV/Excel file (up to 10MB) or use our rich synthetic demo dataset.</p>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <h4>Inspect Quality</h4>
+                <p>Review comprehensive score, duplicate rows, whitespace traps, and outliers.</p>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <h4>Choose Operations</h4>
+                <p>Select which deterministic repairs to apply. Preview changes safely without losing raw data.</p>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <h4>Export & Report</h4>
+                <p>Download repaired CSV or Excel, along with full transparent JSON/CSV audit reports.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: UPLOAD DATASET -->
+      <section id="section-upload" class="content-section">
+        <div class="section-header">
+          <h2>Upload Dataset</h2>
+          <p>Drop your file below to initiate deterministic data-quality profiling.</p>
+        </div>
+
+        <div class="upload-container">
+          <!-- Drop Zone -->
+          <div class="drop-zone" id="drop-zone">
+            <div class="drop-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" x2="12" y1="3" y2="15"/>
+              </svg>
+            </div>
+            <h3>Drag and drop your dataset here</h3>
+            <p>or click to browse from your device</p>
+            <input type="file" id="file-input" accept=".csv, .xlsx, .xls" style="display:none;">
+            <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+              Browse Files
+            </button>
+            <div class="drop-formats">
+              <span>Supported: <strong>CSV, XLSX, XLS</strong></span>
+              <span>•</span>
+              <span>Max size: <strong>10 MB</strong></span>
+            </div>
+          </div>
+
+          <!-- Selected File Card (Hidden until selected) -->
+          <div class="selected-file-card" id="selected-file-card" style="display:none;">
+            <div class="file-info-row">
+              <div class="file-badge-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="file-details">
+                <h4 id="selected-file-name">filename.csv</h4>
+                <p id="selected-file-size">0 KB</p>
+              </div>
+              <button class="btn-icon" id="clear-file-btn" onclick="App.clearSelectedFile()" title="Remove file">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="file-actions">
+              <button class="btn btn-primary w-100" id="upload-analyze-btn" onclick="App.uploadAndAnalyze()">
+                <span class="btn-text">Upload & Analyze Dataset</span>
+                <span class="btn-spinner spinner" style="display:none;"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Alternative: Try Demo Dataset Card -->
+          <div class="sample-callout-card">
+            <div class="callout-icon">⚡</div>
+            <div class="callout-body">
+              <h4>Hackathon Fast-Track Evaluation</h4>
+              <p>Don't have a dataset ready? Test our pre-packaged synthetic dataset with real dirty records (duplicates, missing fields, messy casing, whitespaces, invalid numbers, and outliers).</p>
+            </div>
+            <button class="btn btn-secondary" onclick="App.loadSampleData()">
+              Load Demo Dataset
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: DATA QUALITY -->
+      <section id="section-quality" class="content-section">
+        <div class="section-header-flex">
+          <div>
+            <h2>Data Quality Inspection</h2>
+            <p>Comprehensive findings, severity breakdown, and column profiling.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="App.navigateTo('clean')">
+            Proceed to Clean Data →
+          </button>
+        </div>
+
+        <!-- Score & Health Banner -->
+        <div class="quality-score-banner">
+          <div class="banner-dial">
+            <span class="banner-score" id="quality-score-val">--</span>
+            <span class="banner-grade" id="quality-grade-val">F</span>
+          </div>
+          <div class="banner-details">
+            <div class="banner-status-tag" id="quality-status-tag">Status: Unanalyzed</div>
+            <h3 id="quality-headline">Upload dataset to begin inspection</h3>
+            <p id="quality-formula-text">Quality Score evaluates: Missing Values (35%), Duplicates (25%), Invalid Values (25%), Formatting (15%).</p>
+          </div>
+        </div>
+
+        <!-- Quality Breakdown Cards -->
+        <div class="quality-pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-header">
+              <span class="pillar-title">Missing Values</span>
+              <span class="pillar-weight">Weight: 35%</span>
+            </div>
+            <div class="pillar-score" id="pillar-missing-score">--</div>
+            <p class="pillar-desc" id="pillar-missing-desc">No data</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-header">
+              <span class="pillar-title">Duplicate Records</span>
+              <span class="pillar-weight">Weight: 25%</span>
+            </div>
+            <div class="pillar-score" id="pillar-dup-score">--</div>
+            <p class="pillar-desc" id="pillar-dup-desc">No data</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-header">
+              <span class="pillar-title">Value Validity</span>
+              <span class="pillar-weight">Weight: 25%</span>
+            </div>
+            <div class="pillar-score" id="pillar-invalid-score">--</div>
+            <p class="pillar-desc" id="pillar-invalid-desc">No data</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-header">
+              <span class="pillar-title">Text Formatting</span>
+              <span class="pillar-weight">Weight: 15%</span>
+            </div>
+            <div class="pillar-score" id="pillar-format-score">--</div>
+            <p class="pillar-desc" id="pillar-format-desc">No data</p>
+          </div>
+        </div>
+
+        <!-- Tabs: Issues List vs Column Profiler vs Outliers vs Custom Rules -->
+        <div class="tabs-nav mt-4">
+          <button class="tab-btn active" data-tab="tab-issues">Detected Issues (<span id="tab-issue-count">0</span>)</button>
+          <button class="tab-btn" data-tab="tab-profiler">Column Profiling (<span id="tab-col-count">0</span>)</button>
+          <button class="tab-btn" data-tab="tab-outliers">Statistical Outliers (<span id="tab-outlier-count">0</span>)</button>
+          <button class="tab-btn" data-tab="tab-rules">Custom Validation Rules</button>
+        </div>
+
+        <!-- TAB: Issues Table -->
+        <div class="tab-pane active" id="tab-issues">
+          <div class="card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Detected Quality Problems</h3>
+                <p class="card-subtitle">Every identified flaw with row references and recommended remediations</p>
+              </div>
+              <div class="filter-group">
+                <label for="issue-filter">Filter:</label>
+                <select id="issue-filter" class="form-select" onchange="App.filterIssuesTable()">
+                  <option value="all">All Severities</option>
+                  <option value="critical">Critical Only</option>
+                  <option value="warning">Warnings Only</option>
+                  <option value="info">Info Only</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="issues-table">
+                <thead>
+                  <tr>
+                    <th>Severity</th>
+                    <th>Issue Title</th>
+                    <th>Column</th>
+                    <th>Count</th>
+                    <th>Affected Rows</th>
+                    <th>Explanation & Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody id="issues-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No dataset currently analyzed. Please upload a file.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Column Profiler -->
+        <div class="tab-pane" id="tab-profiler">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Column Profile & Health</h3>
+              <p class="card-subtitle">Inferred datatypes, missing rates, and descriptive statistics</p>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="profiler-table">
+                <thead>
+                  <tr>
+                    <th>Column Name</th>
+                    <th>Inferred Type</th>
+                    <th>Valid / Total</th>
+                    <th>Missing Rate</th>
+                    <th>Distinct Values</th>
+                    <th>Summary Stats (Min / Max / Mean)</th>
+                  </tr>
+                </thead>
+                <tbody id="profiler-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No dataset loaded.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Statistical Outliers -->
+        <div class="tab-pane" id="tab-outliers">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Outlier Detection (1.5x IQR Method)</h3>
+              <p class="card-subtitle">Values lying outside the Interquartile Range are highlighted for inspection. Note: Outliers are unusual, not necessarily errors.</p>
+            </div>
+            <div class="card-body" id="outliers-container">
+              <p class="text-muted">No outliers detected or no dataset analyzed.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Custom Validation Rules -->
+        <div class="tab-pane" id="tab-rules">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Define Custom Validation Rules</h3>
+              <p class="card-subtitle">Establish domain-specific constraints (e.g. age between 0 and 120, salary &gt; 0)</p>
+            </div>
+            <div class="card-body">
+              <div class="rule-builder-form">
+                <div class="row-form">
+                  <div class="form-group">
+                    <label>Target Column:</label>
+                    <select id="rule-col-select" class="form-select">
+                      <option value="">Select Column</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Constraint Type:</label>
+                    <select id="rule-type-select" class="form-select" onchange="App.handleRuleTypeChange()">
+                      <option value="range">Numeric Range [Min - Max]</option>
+                      <option value="min">Minimum Value</option>
+                      <option value="max">Maximum Value</option>
+                      <option value="non_negative">Non-Negative (>= 0)</option>
+                      <option value="regex">Regex Pattern (e.g. Email)</option>
+                    </select>
+                  </div>
+                  <div class="form-group" id="rule-min-group">
+                    <label>Min Value:</label>
+                    <input type="number" id="rule-min-val" class="form-input" placeholder="0">
+                  </div>
+                  <div class="form-group" id="rule-max-group">
+                    <label>Max Value:</label>
+                    <input type="number" id="rule-max-val" class="form-input" placeholder="120">
+                  </div>
+                  <div class="form-group" id="rule-regex-group" style="display:none;">
+                    <label>Regex Pattern:</label>
+                    <input type="text" id="rule-regex-val" class="form-input" placeholder="^[\w\.-]+@[\w\.-]+\.\w+$">
+                  </div>
+                  <div class="form-group align-end">
+                    <button class="btn btn-primary" onclick="App.addCustomRule()">Add Rule</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Configured Rules List -->
+              <div class="mt-4">
+                <h4>Active Custom Rules:</h4>
+                <div id="active-rules-list" class="rules-list-container">
+                  <p class="text-muted text-sm">No custom rules added yet.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: CLEAN DATA -->
+      <section id="section-clean" class="content-section">
+        <div class="section-header-flex">
+          <div>
+            <h2>Data Cleaning & Repair Studio</h2>
+            <p>Select which automated operations to perform. Preview impacts before committing changes.</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" onclick="App.previewCleaning()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview Changes
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="App.applyCleaning()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Apply Selected Repairs
+            </button>
+          </div>
+        </div>
+
+        <div class="cleaner-layout">
+          <!-- Cleaning Configuration Controls Sidebar -->
+          <div class="cleaner-controls-card card">
+            <div class="card-header">
+              <h3 class="card-title">Repair Operations</h3>
+              <p class="card-subtitle">Toggle desired operations</p>
+            </div>
+            <div class="card-body">
+              <form id="cleaning-form" onsubmit="return false;">
+                <!-- Operation 1: Duplicates -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-duplicates" checked>
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Remove Exact Duplicate Rows</span>
+                  </label>
+                  <p class="option-desc">Keeps first occurrence, safely drops duplicate records.</p>
+                </div>
+
+                <!-- Operation 2: Whitespace -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-whitespace" checked>
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Trim Whitespace</span>
+                  </label>
+                  <p class="option-desc">Removes leading/trailing whitespace and collapses double spaces in text columns.</p>
+                </div>
+
+                <!-- Operation 3: Casing Normalization -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-casing" checked onchange="App.toggleCasingControls()">
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Standardize Capitalization</span>
+                  </label>
+                  <p class="option-desc">Harmonize casing across categorical text columns.</p>
+                  <div class="sub-controls" id="casing-sub-controls">
+                    <label>Convention:</label>
+                    <select id="clean-casing-strategy" class="form-select form-select-sm">
+                      <option value="title" selected>Title Case (e.g., New York)</option>
+                      <option value="lower">lowercase (e.g., new york)</option>
+                      <option value="upper">UPPERCASE (e.g., NEW YORK)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Operation 4: Missing Values -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-missing" checked onchange="App.toggleMissingControls()">
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Handle Missing Values</span>
+                  </label>
+                  <p class="option-desc">Impute or drop missing data based on column type.</p>
+                  <div class="sub-controls" id="missing-sub-controls">
+                    <div class="form-group mb-2">
+                      <label>Numeric Strategy:</label>
+                      <select id="missing-num-strategy" class="form-select form-select-sm">
+                        <option value="mean" selected>Fill with Mean</option>
+                        <option value="median">Fill with Median</option>
+                        <option value="leave">Leave Unchanged</option>
+                      </select>
+                    </div>
+                    <div class="form-group mb-2">
+                      <label>Text Strategy:</label>
+                      <select id="missing-text-strategy" class="form-select form-select-sm">
+                        <option value="mode" selected>Fill with Mode (Most Frequent)</option>
+                        <option value="constant">Fill with 'Unknown'</option>
+                        <option value="leave">Leave Unchanged</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="text-danger-emphasis">
+                        <input type="checkbox" id="missing-drop-rows"> Drop rows with missing values
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Operation 5: Dates -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-dates" checked>
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Standardize Date Formats</span>
+                  </label>
+                  <p class="option-desc">Converts parseable date columns to ISO 8601 (YYYY-MM-DD).</p>
+                </div>
+
+                <!-- Operation 6: Numerics -->
+                <div class="clean-option-item">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="clean-opt-numerics" checked>
+                    <span class="checkbox-indicator"></span>
+                    <span class="option-title">Sanitize Numeric Columns</span>
+                  </label>
+                  <p class="option-desc">Strips currency symbols ($) and commas from numeric fields.</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="clean-actions-footer">
+                  <button class="btn btn-primary w-100 mb-2" onclick="App.applyCleaning()">
+                    Apply Repairs
+                  </button>
+                  <button class="btn btn-secondary w-100 mb-2" onclick="App.previewCleaning()">
+                    Preview Impact
+                  </button>
+                  <button class="btn btn-outline-danger w-100" onclick="App.resetSession()">
+                    Reset to Raw Dataset
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Dataset View & Comparison Area -->
+          <div class="cleaner-preview-card card">
+            <div class="card-header-flex">
+              <div class="preview-tabs">
+                <button class="tab-btn active" id="btn-show-original" onclick="App.switchPreviewTab('original')">
+                  Original Dataset
+                </button>
+                <button class="tab-btn" id="btn-show-cleaned" onclick="App.switchPreviewTab('cleaned')">
+                  Cleaned Dataset Preview
+                </button>
+              </div>
+              <div class="preview-meta-info" id="preview-meta-info">
+                Displaying first 30 rows
+              </div>
+            </div>
+
+            <!-- Preview Impact Callout (Shown after preview or clean) -->
+            <div id="preview-impact-alert" class="impact-alert" style="display:none;">
+              <div class="impact-stats">
+                <span id="impact-score-change">Score: -- &rarr; --</span>
+                <span id="impact-rows-change">Rows: --</span>
+              </div>
+              <p id="impact-audit-summary">Changes projected.</p>
+            </div>
+
+            <!-- Table Preview -->
+            <div class="table-responsive preview-table-container">
+              <table class="data-table preview-table" id="preview-table">
+                <thead id="preview-table-head">
+                  <tr><th>#</th><th>No data loaded</th></tr>
+                </thead>
+                <tbody id="preview-table-body">
+                  <tr><td colspan="2" class="text-center py-4 text-muted">Upload a dataset or load demo to preview data.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: REPORTS -->
+      <section id="section-reports" class="content-section">
+        <div class="section-header-flex">
+          <div>
+            <h2>Data Quality & Audit Reports</h2>
+            <p>Verification metrics, before-and-after comparison, and exportable datasets.</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-success btn-sm" onclick="App.downloadExport('csv')">
+              📥 Export Cleaned CSV
+            </button>
+            <button class="btn btn-success btn-sm" onclick="App.downloadExport('excel')">
+              📥 Export Cleaned Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Before-and-After Scorecard -->
+        <div class="scorecard-comparison-grid">
+          <div class="scorecard-col before-card">
+            <div class="scorecard-badge">RAW DATASET</div>
+            <div class="scorecard-score" id="rep-before-score">--</div>
+            <div class="scorecard-grade" id="rep-before-grade">Grade: --</div>
+            <div class="scorecard-details">
+              <div><span>Total Rows:</span> <strong id="rep-before-rows">--</strong></div>
+              <div><span>Issues Detected:</span> <strong id="rep-before-issues">--</strong></div>
+              <div><span>Missing Cells:</span> <strong id="rep-before-missing">--</strong></div>
+              <div><span>Duplicate Rows:</span> <strong id="rep-before-dups">--</strong></div>
+            </div>
+          </div>
+
+          <div class="scorecard-delta-col">
+            <div class="delta-arrow">➔</div>
+            <div class="delta-stat" id="rep-delta-score">+0.0 pts</div>
+            <div class="delta-label">Quality Uplift</div>
+          </div>
+
+          <div class="scorecard-col after-card">
+            <div class="scorecard-badge badge-cleaned">CLEANED DATASET</div>
+            <div class="scorecard-score text-success" id="rep-after-score">--</div>
+            <div class="scorecard-grade text-success" id="rep-after-grade">Grade: --</div>
+            <div class="scorecard-details">
+              <div><span>Final Rows:</span> <strong id="rep-after-rows">--</strong></div>
+              <div><span>Issues Remaining:</span> <strong id="rep-after-issues">--</strong></div>
+              <div><span>Missing Cells:</span> <strong id="rep-after-missing">--</strong></div>
+              <div><span>Duplicate Rows:</span> <strong id="rep-after-dups">--</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operations Audit Trail -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 class="card-title">Applied Operations Audit Trail</h3>
+            <p class="card-subtitle">Transparent record of every transformation executed</p>
+          </div>
+          <div class="card-body">
+            <div id="audit-trail-container">
+              <p class="text-muted">No cleaning operations have been applied yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download & Export Options Card -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h3 class="card-title">Export Cleaned Artifacts</h3>
+            <p class="card-subtitle">Download verified datasets and structured audit reports</p>
+          </div>
+          <div class="card-body">
+            <div class="export-cards-grid">
+              <div class="export-box">
+                <div class="export-icon">📄</div>
+                <h4>Cleaned Dataset (CSV)</h4>
+                <p>Standard comma-separated file ready for ML models and BI dashboards.</p>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="App.downloadExport('csv')">Download CSV</button>
+              </div>
+
+              <div class="export-box">
+                <div class="export-icon">📊</div>
+                <h4>Cleaned Dataset (Excel)</h4>
+                <p>OpenPyXL-formatted .xlsx spreadsheet for business stakeholders.</p>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="App.downloadExport('excel')">Download XLSX</button>
+              </div>
+
+              <div class="export-box">
+                <div class="export-icon">📝</div>
+                <h4>Quality Report (JSON)</h4>
+                <p>Machine-readable JSON schema containing metadata, scores, and column profiles.</p>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="App.downloadReport('json')">Download JSON</button>
+              </div>
+
+              <div class="export-box">
+                <div class="export-icon">📑</div>
+                <h4>Quality Summary (CSV)</h4>
+                <p>Tabular column-by-column audit summary with before-and-after health metrics.</p>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="App.downloadReport('csv')">Download Report CSV</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: ABOUT -->
+      <section id="section-about" class="content-section">
+        <div class="section-header">
+          <h2>About DataWise AI</h2>
+          <p>Mission, mathematical quality algorithms, and technical architecture.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="about-grid">
+              <div>
+                <h3>Project Objective</h3>
+                <p>Messy data costs organizations billions annually in broken pipelines, inaccurate business analytics, and degraded machine learning models. <strong>DataWise AI</strong> was engineered to bridge this gap by offering a transparent, deterministic data quality analysis and non-destructive automated repair platform.</p>
+
+                <h4 class="mt-3">Core Pillars of Data Quality</h4>
+                <ul class="about-list">
+                  <li><strong>Missing Values (Weight 35%):</strong> Evaluates null ratios and offers statistical imputation (mean, median, mode) or row pruning.</li>
+                  <li><strong>Duplicate Records (Weight 25%):</strong> Detects exact row duplicates, preserving original index integrity.</li>
+                  <li><strong>Value Validity (Weight 25%):</strong> Flags unparseable numbers, broken dates, and domain-rule violations.</li>
+                  <li><strong>Text Formatting (Weight 15%):</strong> Identifies whitespace traps and inconsistent categorical casing.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3>Technology Architecture</h3>
+                <div class="tech-stack-pills">
+                  <span class="tech-pill">Python 3.11+</span>
+                  <span class="tech-pill">Flask</span>
+                  <span class="tech-pill">Pandas</span>
+                  <span class="tech-pill">NumPy</span>
+                  <span class="tech-pill">OpenPyXL</span>
+                  <span class="tech-pill">Vanilla JavaScript</span>
+                  <span class="tech-pill">Chart.js</span>
+                  <span class="tech-pill">Gunicorn</span>
+                  <span class="tech-pill">Pytest</span>
+                </div>
+
+                <h4 class="mt-4">Privacy & Security Guarantees</h4>
+                <p class="text-sm text-muted">
+                  • <strong>No Persistent Storage:</strong> Datasets reside in isolated temporary sessions that expire automatically.<br>
+                  • <strong>Path Traversal Defense:</strong> All downloads and session lookups utilize strict UUID token validation.<br>
+                  • <strong>Deterministic Execution:</strong> Fully functional without paid AI API keys, ensuring repeatable, non-hallucinated results.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

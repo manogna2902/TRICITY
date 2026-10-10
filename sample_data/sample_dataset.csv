@@ -1,0 +1,29 @@
+id,full_name,department,age,salary,join_date,email,performance_score
+1,  Alice Johnson  ,Engineering,29,75000,2023-01-15,alice@example.com,4.5
+2,Bob Smith,marketing,34,58000,2022/05/20,bob.smith@example.com,3.8
+3,Charlie Brown,Sales,N/A,62000,2021-11-01,charlie@example.com,4.1
+4,Diana Prince,Engineering,41,$92000,15/03/2020,diana.prince@example.com,4.9
+5,Evan Wright,finance,38,71000,2023-08-12,evan@company,3.2
+6,Fiona Gallagher,Sales,27,54000,2022-09-30,,3.9
+7,George Clark,Engineering,145,88000,2019-04-18,george@example.com,4.0
+8,Hannah Abbott,Marketing,31,63000,2023-02-14,hannah.abbott@example.com,4.3
+9,Ian Malcolm,sales,45,115000,2018-07-22,ian.malcolm@example.com,4.7
+10,Julia Roberts,Finance,33,unknown,2021/10/05,julia@example.com,3.6
+11,Kevin Bacon,Engineering,52,98000,2017-06-11,kevin.bacon@example.com,4.2
+12,  Laura Croft  , MARKETING ,28,59000,2023-03-25,laura@tombraider.org,4.8
+13,Michael Scott,Sales,43,65000,2020-01-01,michael.scott@dundermifflin.com,2.5
+14,Nina Simone,Finance,36,74000,12-04-2022,nina@music.com,4.6
+15,Oscar Martinez,Accounting,42,68000,2019-12-15,oscar@example.com,4.4
+1,  Alice Johnson  ,Engineering,29,75000,2023-01-15,alice@example.com,4.5
+16,Paul Atreides,Operations,24,52000,2024-01-10,paul@dune.org,4.0
+17,Quinn Fabray,Marketing,-5,48000,not_a_date,quinn@glee.edu,3.7
+18,Rachel Green,SALES,30,55000,2022-06-18,rachel.green@ralphlauren.com,3.5
+19,Samwise Gamgee,Operations,38,51000,2021-09-22,samwise@shire.org,4.9
+20,Tony Stark,Engineering,48,950000,2015-05-02,tony@starkindustries.com,5.0
+2,Bob Smith,marketing,34,58000,2022/05/20,bob.smith@example.com,3.8
+21,Uma Thurman,Finance,39,76000,2020-08-14,uma@killbill.com,4.1
+22,Victor Stone,Engineering,,83000,2023-11-19,victor@cyborg.net,4.5
+23,Wanda Maximoff,Operations,32,69000,2022-03-08,wanda@westview.gov,4.7
+24,Xander Harris,Sales,26,47000,2023-07-04,xander@sunnydale.k12,3.3
+25,Yara Greyjoy,Operations,35,72000,2021-04-12,yara@ironislands.org,4.2
+26,Zack Snyder,Marketing,50,89000,2019-10-31,zack@movies.com,3.8
