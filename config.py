@@ -9,7 +9,8 @@ class Config:
     ALLOWED_EXTENSIONS = {"csv", "xlsx", "xls"}
     
     # Storage settings
-    TEMP_STORAGE_DIR = BASE_DIR / "temp_storage"
+    TEMP_STORAGE_DIR = Path(os.environ.get("TEMP_STORAGE_DIR", "/tmp/tricity_storage"))
+
     SAMPLE_DATA_PATH = BASE_DIR / "sample_data" / "sample_dataset.csv"
     SESSION_EXPIRY_MINUTES = int(os.environ.get("SESSION_EXPIRY_MINUTES", "60"))
     
